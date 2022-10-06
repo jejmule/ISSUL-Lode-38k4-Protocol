@@ -22,13 +22,13 @@ def clear_line(n=1):
 ergo = lode38k4()
 
 minutes = 0
-seconds = 10
+seconds = 30
 step_s = 1
 duration_s = minutes * 60 + seconds
 
 print("\nExperiment duration "+str(duration_s)+" s")
 print("press any key to start or esc to quit")
-test = getch()
+test = getch() 
 while test != b'\x1b' :
     load = []
     rpm = []
@@ -42,9 +42,11 @@ while test != b'\x1b' :
             rpm.append(0)
         clear_line()
         prefix = "Test running : "+str(i)+"/"+str(duration_s)+" s"
+        result = "\t Load : "+str(load[i-1])+" W"+"\t RPM :" +str(rpm[i-1])+" tr/min" 
         if i == duration_s :
             prefix = "Test results : "
-        print(prefix+"\tMean load : "+str(mean(load))+" W"+"\t Mean RPM :" +str(mean(load))+" tr/min")
+            result = "\tMean load : "+str(mean(load))+" W"+"\t Mean RPM :" +str(mean(rpm))+" tr/min"
+        print(prefix+result)
         time.sleep(step_s)
     print("End of test : "+str(datetime.now())+"\n")
     print("press any key to start or esc to quit")
