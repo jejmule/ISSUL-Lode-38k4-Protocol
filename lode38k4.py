@@ -19,24 +19,28 @@ class lode38k4 :
             port_list = ports.comports()
             print("list of availbale port")
             for port in port_list :
-                print(port.device+" : "+port.description)
+                print("Lode excalibur found on :"+port.device+" : "+port.description)
                 #test connectioon and lode request status command
                 self.serial = serial.Serial(str(port.device),timeout=timeout,baudrate=baudrate)
-                if self.check_port(device) :
+                if self.check_port(device,silent=True) :
                     break
         else :
             self.serial = serial.Serial(com_port,timeout=timeout,baudrate=baudrate)
-            self.check_port(device)
+            self.check_port(device,silent=True)
 
     
-    def check_port(self,device) : 
+    def check_port(self,device,silent=False) : 
         try :
             answer = self.get_serial(device)
-            print("-LODE device "+str(device)+", serial : "+ answer)
+            if not silent : 
+                print("-LODE device "+str(device)+", serial : ")
             self.connected = True
+            return True
         except ValueError :
-            print("-LODE device "+str(device)+" not found ")
+            if not silent :
+                print("-LODE device "+str(device)+" not found ")
             self.connected = False
+            return False
         
     def set_power(self,device,power) :
         command = 'SP{0}'.format(power)
@@ -81,8 +85,8 @@ class lode38k4 :
         self.serial.write(query.encode('ascii'))
         response =self.serial.readline()
         [device_id,answer] = response.decode('ascii').strip('\r').split(',')
-        if device_id == device :
-            return answer
+        #if device_id == device :
+        return answer
     
     def acq(self,answer) : 
         if answer == '\x06' :

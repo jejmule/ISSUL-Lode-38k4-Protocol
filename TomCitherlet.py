@@ -10,7 +10,6 @@ from msvcrt import getch
 from statistics import mean
 from datetime import datetime
 
-from attr import s
 from lode38k4 import lode38k4
 
 def clear_line(n=1):
@@ -22,12 +21,11 @@ def clear_line(n=1):
 def protocol(ergo, device = 1) : 
 
     minutes = 0
-    seconds = 30
+    seconds = 10
     step_s = 1
     duration_s = minutes * 60 + seconds
 
     os.system('')
-
     print("\nExperiment duration "+str(duration_s)+" s")
     print("press "+str(device)+" to start on device "+str(device))
     test = b'' 
@@ -35,9 +33,9 @@ def protocol(ergo, device = 1) :
         if test.decode() == str(device) :
             load = []
             rpm = []
-            print("Start of test on device "+str(device)+" : "+str(datetime.now()))
+            print("\nStart of test on device "+str(device)+" : "+str(datetime.now()))
             for i in range(1,duration_s+1,step_s) :
-                if ergo.connected : 
+                if ergo.check_port(device,silent=True) : 
                     load.append(ergo.get_load(device))
                     rpm.append(ergo.get_rpm_decimal(device))
                 else :
@@ -47,10 +45,11 @@ def protocol(ergo, device = 1) :
                 prefix = "Test on device "+str(device)+" : "+str(i)+"/"+str(duration_s)+" s"
                 result = "\t Load : "+str(load[i-1])+" W"+"\t RPM :" +str(rpm[i-1])+" tr/min" 
                 if i == duration_s :
-                    prefix = "Test results on device "+str(device)+" : "
+                    prefix = "\tTest results on device "+str(device)+" : "
                     result = "\tMean load : "+str(mean(load))+" W"+"\t Mean RPM :" +str(mean(rpm))+" tr/min"
                     end = " press "+str(device)+" to re-start or esc to quit"
                     print(prefix+result+end)
+                #print(prefix+result)
                 time.sleep(step_s)
             #print("End of test on device "+str(device)+": "+str(datetime.now())+"\n")
             #print("press "+str(device)+" to start on device "+str(device)+" or esc to quit")
@@ -66,11 +65,11 @@ if __name__ == '__main__' :
     threads = []
     ergo = lode38k4()
     if args :
-        for arg in args :
-            print("device : ",arg)
-            t = Thread(target=protocol,args=(ergo,arg,))
-            t.start()
-            threads.append(t)
+        for device in args :
+            if ergo.check_port(device,silent=True) :
+                t = Thread(target=protocol,args=(ergo,device,))
+                t.start()
+                threads.append(t)
     else :
         protocol(ergo)
 
