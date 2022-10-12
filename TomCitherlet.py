@@ -63,7 +63,7 @@ if __name__ == '__main__' :
     args = sys.argv
     del args[0] #remove script path form arg list
     threads = []
-    ergo = lode38k4()
+    ergo = lode38k4(devices=args)
     if args :
         for device in args :
             if ergo.check_port(device,silent=True) :

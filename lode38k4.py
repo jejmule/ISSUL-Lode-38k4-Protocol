@@ -13,27 +13,28 @@ baudrate = 38400
 
 class lode38k4 :
     
-    def __init__(self,com_port="",device=1) :
+    def __init__(self,com_port="",devices=(1,)) :
 
         if com_port == "" :
             port_list = ports.comports()
             print("list of availbale port")
             for port in port_list :
-                print("Lode excalibur found on :"+port.device+" : "+port.description)
+                print("Check "+port.device+" : "+port.description)
                 #test connectioon and lode request status command
                 self.serial = serial.Serial(str(port.device),timeout=timeout,baudrate=baudrate)
-                if self.check_port(device,silent=True) :
-                    break
+                for device in devices : 
+                    if self.check_port(device,silent=False) :
+                        break
         else :
             self.serial = serial.Serial(com_port,timeout=timeout,baudrate=baudrate)
-            self.check_port(device,silent=True)
+            self.check_port(devices[0],silent=False)
 
     
     def check_port(self,device,silent=False) : 
         try :
             answer = self.get_serial(device)
             if not silent : 
-                print("-LODE device "+str(device)+", serial : ")
+                print("-LODE device "+str(device)+", serial : "+answer)
             self.connected = True
             return True
         except ValueError :
@@ -98,4 +99,4 @@ class lode38k4 :
         self.serial.close()
 
 if __name__ == '__main__':
-    ergo = lode38k4()
+    ergo = lode38k4(devices=(1,2))
