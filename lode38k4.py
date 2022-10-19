@@ -22,9 +22,12 @@ class lode38k4 :
                 print("Check "+port.device+" : "+port.description)
                 #test connectioon and lode request status command
                 self.serial = serial.Serial(str(port.device),timeout=timeout,baudrate=baudrate)
+                test = False
                 for device in devices : 
-                    if self.check_port(device,silent=False) :
-                        break
+                    result = self.check_port(device,silent=False)
+                    test = test or result
+                if test :
+                    break
         else :
             self.serial = serial.Serial(com_port,timeout=timeout,baudrate=baudrate)
             self.check_port(devices[0],silent=False)
@@ -35,12 +38,12 @@ class lode38k4 :
             answer = self.get_serial(device)
             if not silent : 
                 print("-LODE device "+str(device)+", serial : "+answer)
-            self.connected = True
+            #self.connected = True
             return True
         except ValueError :
             if not silent :
                 print("-LODE device "+str(device)+" not found ")
-            self.connected = False
+            #self.connected = False
             return False
         
     def set_power(self,device,power) :
@@ -87,6 +90,7 @@ class lode38k4 :
         response =self.serial.readline()
         [device_id,answer] = response.decode('ascii').strip('\r').split(',')
         #if device_id == device :
+        #print(device_id,answer)
         return answer
     
     def acq(self,answer) : 

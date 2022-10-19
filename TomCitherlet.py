@@ -20,8 +20,8 @@ def clear_line(n=1):
 
 def protocol(ergo, device = 1) : 
 
-    minutes = 0
-    seconds = 10
+    minutes = 5
+    seconds = 0
     step_s = 1
     duration_s = minutes * 60 + seconds
 
@@ -35,9 +35,9 @@ def protocol(ergo, device = 1) :
             rpm = []
             print("\nStart of test on device "+str(device)+" : "+str(datetime.now()))
             for i in range(1,duration_s+1,step_s) :
-                if ergo.check_port(device,silent=True) : 
+                if True : 
                     load.append(ergo.get_load(device))
-                    rpm.append(ergo.get_rpm_decimal(device))
+                    rpm.append(ergo.get_rpm(device))
                 else :
                     load.append(0)
                     rpm.append(0)
